@@ -51,9 +51,12 @@ genClass pdcfs = do
   module' <- getModuleName
   fls <- getFunctionLayouts
 
-  return $ CClass (module', rwClassName rwNaming) Public (CContext []) (0, "a") (map (makeFunc module') fls ++ pdcfs)
+  return $ CClass (module', rwClassName rwNaming) Public (CContext []) [genericTypeVariableName] 
+                  [] (map (makeFunc module') fls ++ pdcfs)
  where
-  makeFunc module' (FunctionLayout name t _) = CFunc (module', name) 0 Public (CQualType (CContext []) t) []
+  makeFunc :: MName -> FunctionLayout -> CFuncDecl
+  makeFunc module' (FunctionLayout name t _) = CFunc (module', name) 0 Public 
+                                                     (CQualType (CContext []) t) []
 
 --- Generates a ReadWrite instance for a type declaration.
 --- Given a type
@@ -72,7 +75,10 @@ genInstance  t = case t of
     funs <- mapM (genFunction t) fls
 
     let baseMod = rwBaseModuleName rwNaming
-    return $ CInstance (baseMod, rwClassName rwNaming) (CContext (classConstraint (rwClassName rwNaming) baseMod tvs)) (typeDeclToTypeExpr t) funs
+    return $ CInstance (baseMod, rwClassName rwNaming) 
+                       (CContext (classConstraint (rwClassName rwNaming) baseMod tvs)) 
+                       [typeDeclToTypeExpr t] 
+                       funs
   _                 -> error "(internal) Should've been a data declaration!"
 
 genInstances :: [CTypeDecl] -> RWM [CInstanceDecl]
@@ -85,7 +91,8 @@ gen = do
   a <- getProgram
   generatedInstances <- genInstances (types a)
 
-  return (CurryProg modname [progName a, (rwBaseModuleName rwNaming), "System.IO"] Nothing [] generatedInstances [] [] [])
+  return $ CurryProg modname [progName a, (rwBaseModuleName rwNaming), "System.IO"] 
+                     Nothing [] generatedInstances [] [] []
 
 --- For a given type 't' and a function layout, this function generates a function declaration.
 --- The function layout contains the name of the function, the type of the function and the
@@ -119,11 +126,11 @@ allPredefined (Naming _ cn _) = nub . map allPredefined' . filter ((== cn) . snd
  where
   instanceName (CInstance n _ _ _) = n
   allPredefined' :: CInstanceDecl -> QName
-  allPredefined' (CInstance _ _ te _) = case te of
+  allPredefined' (CInstance _ _ [te] _) = case te of
     (CTCons n) -> n
     _          -> case tconsArgsOfType te of
                     (Just (n, _)) -> n
-                    Nothing       -> error $ "allPredefined: " ++ show te ++ " should've been a base type!"
+                    Nothing       -> error $ "allPredefined: " ++ show te ++ " should have been a base type!"
 
 --- Returns true iff the type declaration contains functional types.
 containsFunction :: CTypeDecl -> Bool
@@ -157,7 +164,8 @@ defaultStrLn = 5
 defaultAlphabetLength :: Int
 defaultAlphabetLength = 26
 
---- Runs the codegen tool for the given read and write generator as well as the format representation type.
+--- Runs the codegen tool for the given read and write generator 
+--- as well as the format representation type.
 runTool :: [String] -> [FunctionLayout] -> IO()
 runTool args fls = do
   putStrLn toolBanner
@@ -299,8 +307,8 @@ generateOperations (CLOptions sl al _ _ _) =
   CurryProg (modName) [baseModName] Nothing [] [] [] fs []
  where
   fs = [cfunc  (modName, "writeDataFile") 1 Public qt1 [r1], 
-        cfunc  (modName, "showData")  1 Public qt2 [r2], 
-        cfunc  (modName, "readData")  1 Public qt3 [r3], 
+        cfunc  (modName, "showData")      1 Public qt2 [r2], 
+        cfunc  (modName, "readData")      1 Public qt3 [r3], 
         cfunc  (modName, "readDataFile")  1 Public qt4 [r4], 
         stCmtFunc
          ("The parameters of the show/write operations:\n" ++
@@ -308,7 +316,7 @@ generateOperations (CLOptions sl al _ _ _) =
          (modName, "params") 0 Public
          (baseType (baseModName, "RWParameters")) [r5]]
 
-  context = CContext [((baseModName, "ReadWrite"), genericTypeVariable)] -- ReadWrite a => 
+  context = CContext [((baseModName, "ReadWrite"), [genericTypeVariable])] -- ReadWrite a => 
   qt1 = CQualType context (stringType ~> genericTypeVariable ~> ioType unitType) -- String -> a -> IO ()
   qt2 = CQualType context (genericTypeVariable ~> stringType)                    -- a -> String
   qt3 = CQualType context (stringType ~> maybeType genericTypeVariable)          -- String -> Maybe a

@@ -93,7 +93,10 @@ isTypeVar te = case te of
 
 --- The type variable used as the placeholder for instance declarations of the ReadWrite class 
 genericTypeVariable :: CTypeExpr
-genericTypeVariable = CTVar (0, "a")
+genericTypeVariable = CTVar genericTypeVariableName
+
+genericTypeVariableName :: CTVarIName
+genericTypeVariableName = (0, "a")
 
 --- Generates the rwClass constraint for all type variables.
 --- Given a type
@@ -101,7 +104,7 @@ genericTypeVariable = CTVar (0, "a")
 --- This function can be used to derive all constraints necessary to generate the instance header
 ---   instance (ReadWrite t1, ..., ReadWrite tn) => ReadWrite (T t1 ... tn) 
 classConstraint :: String -> String -> [CTVarIName] -> [CConstraint]
-classConstraint className module' = map (\n -> ((module', className), CTVar n))
+classConstraint className module' = map (\n -> ((module', className), [CTVar n]))
 
 --- May or may not add the input type to the output. For a given call
 ---  > returnTypeExpr r a b
