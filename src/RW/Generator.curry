@@ -1,5 +1,4 @@
-{-# OPTIONS_FRONTENT -Wno-incomplete-patterns #-}
-{-# OPTIONS_FRONTENT -Wno-name-shadowing #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 ------------------------------------------------------------------------------
 --- Implementation of the command-line interface/tool and abstract RW program
@@ -51,18 +50,24 @@ genClass pdcfs = do
   module' <- getModuleName
   fls <- getFunctionLayouts
 
-  return $ CClass (module', rwClassName rwNaming) Public (CContext []) (0, "a") (map (makeFunc module') fls ++ pdcfs)
+  return $ CClass (module', rwClassName rwNaming) Public (CContext []) (0, "a")
+                  (map (makeFunc module') fls ++ pdcfs)
  where
-  makeFunc module' (FunctionLayout name t _) = CFunc (module', name) 0 Public (CQualType (CContext []) t) []
+  makeFunc module' (FunctionLayout name t _) =
+    CFunc (module', name) 0 Public (CQualType (CContext []) t) []
 
---- Generates a ReadWrite instance for a type declaration.
+--- Generates a `ReadWrite` instance for a type declaration.
 --- Given a type
----   T t1 ... tn = C1 c1_1 ... c1_k1 | ... | Cn cn_1 ... cn_kn 
+---
+---     T t1 ... tn = C1 c1_1 ... c1_k1 | ... | Cn cn_1 ... cn_kn
+---
 --- the function generates an instance
----   instance (ReadWrite t1, ..., ReadWrite tn) => ReadWrite (T t1 ... tn) where
----     read  = ...
----     write = ...
----     ...
+---
+---     instance (ReadWrite t1, ..., ReadWrite tn) => ReadWrite (T t1 ... tn)
+---      where read  = ...
+---            write = ...
+---            ...
+---
 --- The concrete read and write (and/or possibly other) function generation 
 --- depends on the generator functions supplied by the concrete implementation.
 genInstance :: CTypeDecl -> RWM CInstanceDecl
@@ -72,7 +77,9 @@ genInstance  t = case t of
     funs <- mapM (genFunction t) fls
 
     let baseMod = rwBaseModuleName rwNaming
-    return $ CInstance (baseMod, rwClassName rwNaming) (CContext (classConstraint (rwClassName rwNaming) baseMod tvs)) (typeDeclToTypeExpr t) funs
+    return $ CInstance (baseMod, rwClassName rwNaming)
+               (CContext (classConstraint (rwClassName rwNaming) baseMod tvs))
+               (typeDeclToTypeExpr t) funs
   _                 -> error "(internal) Should've been a data declaration!"
 
 genInstances :: [CTypeDecl] -> RWM [CInstanceDecl]
@@ -85,18 +92,22 @@ gen = do
   a <- getProgram
   generatedInstances <- genInstances (types a)
 
-  return (CurryProg modname [progName a, (rwBaseModuleName rwNaming), "System.IO"] Nothing [] generatedInstances [] [] [])
+  return $ CurryProg modname
+             [progName a, (rwBaseModuleName rwNaming), "System.IO"]
+             Nothing [] generatedInstances [] [] []
 
---- For a given type 't' and a function layout, this function generates a function declaration.
---- The function layout contains the name of the function, the type of the function and the
---- generator function for the function body.
+--- For a given type 't' and a function layout, this function generates
+--- a function declaration.
+--- The function layout contains the name of the function, the type of the
+--- function and the generator function for the function body.
 genFunction :: CTypeDecl -> FunctionLayout -> RWM CFuncDecl
 genFunction type' (FunctionLayout name _ genF) = do
   rs <- genF type'
   modname <- getModuleName
-  return $ CFunc (modname, name) 0 Public (CQualType (CContext []) (typeDeclToTypeExpr type')) rs
+  return $ CFunc (modname, name) 0 Public (CQualType (CContext [])
+                (typeDeclToTypeExpr type')) rs
 
---------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 --- Analyzes the module, handles missing data definitions
 
 --- Returns the names of all data definitions in the given program.
@@ -115,7 +126,8 @@ allDataUsed  = nub . concatMap allDataInConstructor . constructors
 --- Returns the names of all data names defined in the program. 
 --- Used to retrieve the names of all predefined data definition instances.
 allPredefined :: Naming -> [CInstanceDecl] -> [QName]
-allPredefined (Naming _ cn _) = nub . map allPredefined' . filter ((== cn) . snd . instanceName)
+allPredefined (Naming _ cn _) =
+  nub . map allPredefined' . filter ((== cn) . snd . instanceName)
  where
   instanceName (CInstance n _ _ _) = n
   allPredefined' :: CInstanceDecl -> QName
@@ -123,7 +135,8 @@ allPredefined (Naming _ cn _) = nub . map allPredefined' . filter ((== cn) . snd
     (CTCons n) -> n
     _          -> case tconsArgsOfType te of
                     (Just (n, _)) -> n
-                    Nothing       -> error $ "allPredefined: " ++ show te ++ " should've been a base type!"
+                    Nothing       -> error $ "allPredefined: " ++ show te ++
+                                             " should have been a base type!"
 
 --- Returns true iff the type declaration contains functional types.
 containsFunction :: CTypeDecl -> Bool
@@ -146,7 +159,7 @@ containsFunction td =
 modules :: [QName] -> [MName]
 modules = nub . map fst
 
---------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 --- CLI tool implementation
 
 --- The default minimum string length for extraction.
@@ -157,7 +170,8 @@ defaultStrLn = 5
 defaultAlphabetLength :: Int
 defaultAlphabetLength = 26
 
---- Runs the codegen tool for the given read and write generator as well as the format representation type.
+--- Runs the codegen tool for the given read and write generator
+--- as well as the format representation type.
 runTool :: [String] -> [FunctionLayout] -> IO()
 runTool args fls = do
   putStrLn toolBanner
@@ -171,7 +185,10 @@ runTool args fls = do
         then do
           putStrLn $ "\nGenerating parametrized read and write operations"
           let generatedProg = generateOperations opts
-          writeProg opts "." generatedProg
+              modcmt = ["This module contains parameterized read/write options",
+                        "which allows to influence the form of generated",
+                        "compact data (alphabet length, string length).\n"]
+          writeProg opts "." modcmt generatedProg
           putStrLn $ "Generated module: " ++ show (progName generatedProg)
         else return ()
  where
@@ -186,18 +203,21 @@ runTool args fls = do
     let resultRWM = runRWM gen (Runtime (progName prog ++ "RW") fls prog [] [])
     let generatedProg = fst resultRWM
 
-    let predefineds = map pre ["Int", "Float", "Char", "Bools", "[]", "Either",
+    let predefineds = map pre ["Int", "Float", "Char", "Bool", "[]", "Either",
                                "Maybe", "Ordering", "()", "(,)", "(,,)", "(,,,)"]
-    let missing = (allDataUsed prog \\ allDataDefs prog) \\ predefineds
+        missing = (allDataUsed prog \\ allDataDefs prog) \\ predefineds
 
-    writeProg opts basedir generatedProg
-    putStrLn $ "ReadWrite instances generated  for: " ++  ppData (allDataDefs prog)
+        modcmt = ["This module has been generated by the tool `curry-rw-data`.",
+                  "It contains instances of class `ReadWrite` for all types",
+                  "defined in module `" ++ progName prog ++ "`.\n"]
+    writeProg opts basedir modcmt generatedProg
+    putStrLn $ "ReadWrite instances generated for: " ++ ppData (allDataDefs prog)
     putStrLn $ "Module 'RW.Base' defines instances for:\n" ++
-               ppData  predefineds
+               ppData predefineds
 
     unless (null missing) $
       do putStrLn $
-          "\nMissing data definitions: " ++ show (ppData $ missing) ++
+          "\nMissing data definitions: " ++ show (ppData missing) ++
           "\nPlease provide the definitions for the missing data types,\n" ++
           "either by manually inserting them or by running this tool on\n" ++
           "the following module(s) and then importing the resulting module(s):"
@@ -216,7 +236,7 @@ runTool args fls = do
   -- Writes the generated program to a file.
   -- For an input file path `a/b/foo.curry`, the output file will be
   -- `a/b/fooRW.curry`.
-  writeProg opts basedir p = do
+  writeProg opts basedir modcmt p = do
     let modids = splitModuleIdentifiers (progName p)
     let fn = if null (optOutDir opts)
                then (if basedir `elem` [".","./"] then id else (basedir </>))
@@ -224,22 +244,14 @@ runTool args fls = do
                else optOutDir opts </> last modids ++ ".curry"
     putStrLn $ "as module '" ++ progName p ++ "' stored in file '" ++
                fn ++ "'..."
-    writeFile fn (showProg (addVersion p))
+    writeFile fn (unlines (map ("-- "++) modcmt) ++ showProg p ++ "\n")
 
   ppData = intercalate ", " . map snd
-  --- Adds a version function to the program if no other functions are defined. 
-  --- This needs to be done as the pretty printer will only export the RW-class definiton
-  --- if all (but not zero) function definitions are public.
-  addVersion cp@(CurryProg n i d cs is ts fs ops)
-   = case fs of
-      [] -> CurryProg n i d cs is ts
-              (CFunc (n, "version_"++ map (\c -> if c == '.' then '_' else c) n)
-                     0 Public (CQualType (CContext []) floatType)
-                     [simpleRule [] (cFloat version)] : fs) ops
-      _  -> cp
-  -- 'setShowLocalSigs' is used to show the type signatures of local functions in the generated RW module. 
-  -- Necessary for 'typeOf'.
-  showProg = prettyCurryProg (setNoQualification (setShowLocalSigs True defaultOptions))
+
+  -- 'setShowLocalSigs' is used to show the type signatures of local functions
+  -- in the generated RW module. This is necessary for 'typeOf'.
+  showProg = prettyCurryProg
+               (setNoQualification (setShowLocalSigs True defaultOptions))
 
 ------------------------------------------------------------------------------
 --- Command line processing
@@ -305,7 +317,7 @@ generateOperations (CLOptions sl al _ _ _) =
         stCmtFunc
          ("The parameters of the show/write operations:\n" ++
           "minimum length of extract strings and alphabet length.")
-         (modName, "params") 0 Public
+         paramsName 0 Public
          (baseType (baseModName, "RWParameters")) [r5]]
 
   context = CContext [((baseModName, "ReadWrite"), genericTypeVariable)] -- ReadWrite a => 
@@ -315,15 +327,16 @@ generateOperations (CLOptions sl al _ _ _) =
   qt4 = CQualType context (stringType ~> ioType (maybeType genericTypeVariable)) -- String -> IO (Maybe a)
 
   r1 = CRule [] $ simpleRhs (applyF (baseModName, "writeDataFileP")
-                                    [CSymbol (modName, "params")])
+                                    [CSymbol paramsName])
   r2 = CRule [] $ simpleRhs (applyF (baseModName, "showDataP")
-                                    [CSymbol (modName, "params")]) 
-  r3 = CRule [] $ simpleRhs (constF (baseModName, baseModName ++ "readData"))
-  r4 = CRule [] $ simpleRhs (constF (baseModName, baseModName ++ "readDataFile"))
+                                    [CSymbol paramsName]) 
+  r3 = CRule [] $ simpleRhs (constF (baseModName, baseModName ++ ".readData"))
+  r4 = CRule [] $ simpleRhs (constF (baseModName, baseModName ++ ".readDataFile"))
   r5 = CRule [] $ simpleRhs (applyF (baseModName, "RWParameters ")
                                     [cInt sl, cInt al])
   modName     = rwParametrizedModuleName rwNaming
   baseModName = rwBaseModuleName rwNaming
+  paramsName  = (modName, "rwParams")
 
 --------------------------------------------------------------------------------------------
 --- FunctionGenerator implementations for the RW class instances
@@ -338,38 +351,44 @@ logI b n | b == 1    = n
          | n <= b    = 1
          | otherwise = 1 + logI b (n `div` b)
 
---- Used to encode a constructor index as a list of characters (for pattern matching in the read function).
+--- Used to encode a constructor index as a list of characters
+--- (for pattern matching in the read function).
 codingI :: Int -> Int -> [Char]
-codingI i cs | cs == 1   = "" -- No pattern matching needed for a single-constructor type
+codingI i cs | cs == 1   = "" -- No pattern matching needed for a
+                              -- single-constructor type
              | otherwise = prefix ++ result
  where 
   l = logI (length coding) cs
   result = codingI' i
   prefix = replicate (l - length result) '0'
 
-  codingI' n = (if n < length coding then "" else codingI' (n `div` length coding)) ++ [coding !! (n `mod` length coding)]
+  codingI' n = (if n < length coding
+                  then ""
+                  else codingI' (n `div` length coding)) ++
+               [coding !! (n `mod` length coding)]
 
 --- show generator implementation
 generatorShow :: FunctionGenerator
-generatorShow typedecl = return $ zipWith (forCons (rwBaseModuleName rwNaming, "showRW")) [0..] tcs
-  where
-    tcs = typeCons typedecl
-    forCons wfn i (CCons name _ tes)
-      = CRule (lhs name tes)
-          (CSimpleRhs (tupleExpr [CVar (length tes, "strs" ++ show (length tes)), outputExpr]) wheres)
-      where
-        outputExpr | length tcs == 1 && null tes = CApply (CSymbol ("Prelude", "showString")) (string2ac "")
-                   | otherwise                   = applyExpr $ optimizeSingleConstructor tcs (outputConstr : rest)
-        outputConstr | length tcs <= length coding = applyF ("Prelude", "showChar")   [cChar (coding !! i)]
-                     | otherwise                   = applyF ("Prelude", "showString") [string2ac (codingI i (length tcs))]
-        rest = map (\index -> CVar (index, "show" ++ show (index + 1))) (fromIndex0 tes)
-        wheres = map (\rn -> CLocalPat (
-                                tuplePattern [CPVar (rn + 1, "strs" ++ show (rn + 1)), CPVar (rn + 1 + length tes, "show" ++ show (rn+1))]
-                              ) (
-                                CSimpleRhs (applyF wfn [CVar (0, "params"), CVar (rn, "strs" ++ show rn), CVar (rn + length tes, varName rn ++ "'")]) []
-                              )) (fromIndex0 tes)
+generatorShow typedecl =
+  return $ zipWith (forCons (rwBaseModuleName rwNaming, "showRW")) [0..] tcs
+ where
+  tcs = typeCons typedecl
+  forCons wfn i (CCons name _ tes) =
+    CRule (lhs name tes)
+      (CSimpleRhs (tupleExpr [CVar (length tes, "strs" ++ show (length tes)), outputExpr]) wheres)
+   where
+    outputExpr | length tcs == 1 && null tes = CApply (CSymbol ("Prelude", "showString")) (string2ac "")
+                | otherwise                   = applyExpr $ optimizeSingleConstructor tcs (outputConstr : rest)
+    outputConstr | length tcs <= length coding = applyF ("Prelude", "showChar")   [cChar (coding !! i)]
+                  | otherwise                   = applyF ("Prelude", "showString") [string2ac (codingI i (length tcs))]
+    rest = map (\index -> CVar (index, "show" ++ show (index + 1))) (fromIndex0 tes)
+    wheres = map (\rn -> CLocalPat (
+                            tuplePattern [CPVar (rn + 1, "strs" ++ show (rn + 1)), CPVar (rn + 1 + length tes, "show" ++ show (rn+1))]
+                          ) (
+                            CSimpleRhs (applyF wfn [CVar (0, "params"), CVar (rn, "strs" ++ show rn), CVar (rn + length tes, varName rn ++ "'")]) []
+                          )) (fromIndex0 tes)
 
-    lhs name tes = [CPVar (0, "params"), CPVar (0, "strs0"), CPComb name (map (\index -> CPVar (index + (length tes + 1), varName index ++ "'")) (fromIndex0 tes))]
+  lhs name tes = [CPVar (0, "params"), CPVar (0, "strs0"), CPComb name (map (\index -> CPVar (index + (length tes + 1), varName index ++ "'")) (fromIndex0 tes))]
 
 --- read generator implementation
 generatorRead :: FunctionGenerator
@@ -399,7 +418,7 @@ generatorWrite typedecl = return $ zipWith (forCons (rwBaseModuleName rwNaming, 
  where
   tcs = typeCons typedecl
   forCons wfn i (CCons name _ tes)
-    = CRule (lhs name tes) (CSimpleRhs rhs [])
+    = CRule lhs (CSimpleRhs rhs [])
    where
     rhs | null tes && length tcs == 1 = CApply (CSymbol $ pre "return") (CVar (length tes + 1, "strs"))
         | null tes                    = applyF (pre ">>") [writeCons, CApply (CSymbol $ pre "return") (CVar (length tes + 1, "strs"))] 
@@ -409,16 +428,22 @@ generatorWrite typedecl = return $ zipWith (forCons (rwBaseModuleName rwNaming, 
                | otherwise                   = applyF ("System.IO","hPutStr")  [CVar (0,"h"), string2ac (codingI i (length tcs))]
     monad      = combineWithL (pre ">>=") (map (\index -> applyF wfn (CVar (0, "params") : (args index))) (fromIndex0 tes))
     args index = appendIf (index == 0) [CVar (0, "h"), CVar (index + 1, varName index ++ "'")] (CVar (length tes + 1, "strs"))
-    lhs name tes = [CPVar (0, "params"), CPVar (0, "h"), CPComb name (map (\index -> CPVar (index + 1, varName index ++ "'")) (fromIndex0 tes)), CPVar (length tes + 1, "strs")]
+    lhs = [CPVar (0, "params"), CPVar (0, "h"),
+           CPComb name (map (\index -> CPVar (index + 1, varName index ++ "'"))
+                            (fromIndex0 tes)),
+           CPVar (length tes + 1, "strs")]
 
---- typeOf generator implementation
+--- `typeOf` generator implementation
 ---
 --- For a data definition 
----  data T a b ... = ...
+---
+---    data T a b ... = ...
+---
 --- this function generates the following code:
----  typeOf :: T a b ... -> RWType
----  typeOf n = RWType "T" [typeOf (get_a n), typeOf (get_b n), ...]
----    where 
+---
+---    typeOf :: T a b ... -> RWType
+---    typeOf n = RWType "T" [typeOf (get_a n), typeOf (get_b n), ...]
+---     where 
 ---      get_a :: T a b ... -> a
 ---      get_a (T a b ...) = failed
 ---      ... 
@@ -464,10 +489,22 @@ main = do
 
 runWith :: [String] -> Prelude.IO ()
 runWith args = runTool args 
-  [ FunctionLayout "readRW"  (listType (tupleType [stringType, stringType]) ~> stringType ~> tupleType [genericTypeVariable, stringType]) generatorRead
-  , FunctionLayout "showRW"  (mapStrStr ~> genericTypeVariable ~> tupleType [mapStrStr, CTCons ("Text.Show", "ShowS")])                   generatorShow
-  , FunctionLayout "writeRW" (CTCons ("System.IO", "Handle") ~> genericTypeVariable ~> mapStrStr ~> ioType mapStrStr)                     generatorWrite
-  , FunctionLayout "typeOf"  (genericTypeVariable ~> CTCons (rwbaseName "RWType"))                                                  generatorTypeOf
+  [ FunctionLayout "readRW"
+      (listType (tupleType [stringType, stringType]) ~> stringType
+        ~> tupleType [genericTypeVariable, stringType])
+      generatorRead
+  , FunctionLayout "showRW"
+      (mapStrStr ~> genericTypeVariable
+        ~> tupleType [mapStrStr, CTCons ("Text.Show", "ShowS")])
+      generatorShow
+  , FunctionLayout "writeRW"
+      (CTCons ("System.IO", "Handle") ~> genericTypeVariable ~> mapStrStr
+        ~> ioType mapStrStr)
+      generatorWrite
+  , FunctionLayout "typeOf"
+      (genericTypeVariable ~> CTCons (rwbaseName "RWType"))
+      generatorTypeOf
   ] 
  where
-  mapStrStr = CTApply (CTApply (CTCons ("Data.Map", "Map")) stringType) stringType
+  mapStrStr =
+    CTApply (CTApply (CTCons ("Data.Map", "Map")) stringType) stringType
