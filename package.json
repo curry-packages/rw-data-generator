@@ -1,6 +1,6 @@
 {
   "name": "rw-data-generator",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Lasse Zuengel <stu226842@mail.uni-kiel.de>",
   "maintainer": "Michael Hanus <mh@informatik.uni-kiel.de>",
   "synopsis": "A tool to generate read and write operations for a compact data representation",
