@@ -2,6 +2,8 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `Handle.MyData`.
 
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+
 module Handle.MyDataRW where
 
 import Handle.MyData

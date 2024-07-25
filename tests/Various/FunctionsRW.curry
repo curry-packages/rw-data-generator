@@ -2,6 +2,8 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `Various.Functions`.
 
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+
 module Various.FunctionsRW where
 
 import Various.Functions

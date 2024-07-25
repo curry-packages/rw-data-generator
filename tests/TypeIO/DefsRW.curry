@@ -2,6 +2,8 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `TypeIO.Defs`.
 
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+
 module TypeIO.DefsRW where
 
 import TypeIO.Defs

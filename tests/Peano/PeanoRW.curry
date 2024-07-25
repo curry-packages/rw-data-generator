@@ -2,6 +2,8 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `Peano.Peano`.
 
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+
 module Peano.PeanoRW where
 
 import Peano.Peano
