@@ -16,7 +16,7 @@
       "process"       : ">= 3.0.0, < 4.0.0",
       "profiling"     : ">= 3.0.0, < 4.0.0",
       "directory"     : ">= 3.0.0, < 4.0.0",
-      "rw-data"       : ">= 2.0.0"
+      "rw-data"       : ">= 1.0.0, < 2.0.0"
     },
   "description": 
     "This package contains the implementation of a tool to generate instances of class `ReadWrite` for all types in a given module so that read and write operation for a compact data representation are available.",
