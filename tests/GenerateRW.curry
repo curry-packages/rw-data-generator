@@ -10,7 +10,8 @@ testGenTypeIO =
 
 testGenHandle :: PropIO
 testGenHandle =
-  testEx "Handle.MyData" "Handle/MyDataRW.curry" "MyDataRW.curry" `returns` True
+  testEx "Handle.MyData" "Handle/MyDataRW.curry" "MyDataRW.curry"
+    `returns` True
 
 testGenPeano :: PropIO
 testGenPeano =
@@ -18,19 +19,23 @@ testGenPeano =
 
 testGenFlatCurry :: PropIO
 testGenFlatCurry =
-  testEx "MyFlatCurry.Types" "MyFlatCurry/TypesRW.curry" "TypesRW.curry" `returns` True
+  testEx "MyFlatCurry.Types" "MyFlatCurry/TypesRW.curry" "TypesRW.curry"
+    `returns` True
 
 testGenNewType :: PropIO
 testGenNewType =
-  testEx "Various.Newtypes" "Various/NewtypesRW.curry" "NewtypesRW.curry" `returns` True
+  testEx "Various.Newtypes" "Various/NewtypesRW.curry" "NewtypesRW.curry"
+    `returns` True
 
 testGenManyCons :: PropIO
 testGenManyCons =
-  testEx "Various.ManyCons" "Various/ManyConsRW.curry" "ManyConsRW.curry" `returns` True
+  testEx "Various.ManyCons" "Various/ManyConsRW.curry" "ManyConsRW.curry"
+    `returns` True
 
 testGenFunctions :: PropIO
 testGenFunctions =
-  testEx "Various.Functions" "Various/FunctionsRW.curry" "FunctionsRW.curry" `returns` True
+  testEx "Various.Functions" "Various/FunctionsRW.curry" "FunctionsRW.curry"
+    `returns` True
 
 -- Generate RW instances for a given module, compares it to an existing one (second arg.),
 -- and remove the generated file (third arg.) after the comparison.

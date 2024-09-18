@@ -1,6 +1,7 @@
 --- Some conversion, selection and building goodies
 ---
 --- @author Lasse Züngel
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 module RW.Build where
 
@@ -60,7 +61,7 @@ isPolymorphic :: CTypeDecl -> Bool
 isPolymorphic (CType _ _ tvs _ _) = not $ null tvs
 
 --- Returns true if the given type declaration is monomorphic (contains no type variables)
-isMonomorphic :: ACT.CTypeDecl -> Prelude.Bool
+isMonomorphic :: CTypeDecl -> Bool
 isMonomorphic = not . isPolymorphic
 
 --- All type variables occurring in a given type declaration
@@ -171,7 +172,7 @@ isTypeSyn t = case t of
   _                  -> False
 
 --- Simple pretty printer for type expressions
-showTypeExpr :: ACT.CTypeExpr -> [Prelude.Char]
+showTypeExpr :: CTypeExpr -> String
 showTypeExpr (CTApply a b)      = showTypeExpr a ++ " " ++ showTypeExpr b
 showTypeExpr (CTCons (_, name)) = name
 showTypeExpr (CTVar (_, name))  = name
