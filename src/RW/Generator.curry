@@ -50,10 +50,11 @@ genClass pdcfs = do
   module' <- getModuleName
   fls <- getFunctionLayouts
 
-  return $ CClass (module', rwClassName rwNaming) Public (CContext []) (0, "a")
-                  (map (makeFunc module') fls ++ pdcfs)
+  return $ CClass (module', rwClassName rwNaming) Public (CContext []) [genericTypeVariableName] 
+                  [] (map (makeFunc module') fls ++ pdcfs)
  where
-  makeFunc module' (FunctionLayout name t _) =
+  makeFunc :: MName -> FunctionLayout -> CFuncDecl
+  makeFunc module' (FunctionLayout name t _) = 
     CFunc (module', name) 0 Public (CQualType (CContext []) t) []
 
 --- Generates a `ReadWrite` instance for a type declaration.
@@ -79,7 +80,7 @@ genInstance  t = case t of
     let baseMod = rwBaseModuleName rwNaming
     return $ CInstance (baseMod, rwClassName rwNaming)
                (CContext (classConstraint (rwClassName rwNaming) baseMod tvs))
-               (typeDeclToTypeExpr t) funs
+               [typeDeclToTypeExpr t] funs
   _                 -> error "(internal) Should've been a data declaration!"
 
 genInstances :: [CTypeDecl] -> RWM [CInstanceDecl]
@@ -131,7 +132,7 @@ allPredefined (Naming _ cn _) =
  where
   instanceName (CInstance n _ _ _) = n
   allPredefined' :: CInstanceDecl -> QName
-  allPredefined' (CInstance _ _ te _) = case te of
+  allPredefined' (CInstance _ _ [te] _) = case te of
     (CTCons n) -> n
     _          -> case tconsArgsOfType te of
                     (Just (n, _)) -> n
@@ -317,8 +318,8 @@ generateOperations (CLOptions sl al _ _ _) =
   CurryProg (modName) [baseModName] Nothing [] [] [] fs []
  where
   fs = [cfunc  (modName, "writeDataFile") 1 Public qt1 [r1], 
-        cfunc  (modName, "showData")  1 Public qt2 [r2], 
-        cfunc  (modName, "readData")  1 Public qt3 [r3], 
+        cfunc  (modName, "showData")      1 Public qt2 [r2], 
+        cfunc  (modName, "readData")      1 Public qt3 [r3], 
         cfunc  (modName, "readDataFile")  1 Public qt4 [r4], 
         stCmtFunc
          ("The parameters of the show/write operations:\n" ++
@@ -326,7 +327,7 @@ generateOperations (CLOptions sl al _ _ _) =
          paramsName 0 Public
          (baseType (baseModName, "RWParameters")) [r5]]
 
-  context = CContext [((baseModName, "ReadWrite"), genericTypeVariable)] -- ReadWrite a => 
+  context = CContext [((baseModName, "ReadWrite"), [genericTypeVariable])] -- ReadWrite a => 
   qt1 = CQualType context (stringType ~> genericTypeVariable ~> ioType unitType) -- String -> a -> IO ()
   qt2 = CQualType context (genericTypeVariable ~> stringType)                    -- a -> String
   qt3 = CQualType context (stringType ~> maybeType genericTypeVariable)          -- String -> Maybe a

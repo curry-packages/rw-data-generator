@@ -1,6 +1,6 @@
 {
   "name": "rw-data-generator",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Lasse Zuengel <stu226842@mail.uni-kiel.de>",
   "maintainer": "Michael Hanus <mh@informatik.uni-kiel.de>",
   "synopsis": "A tool to generate read and write operations for a compact data representation",
@@ -9,13 +9,14 @@
   "licenseFile": "LICENSE",
   "dependencies": {
       "base"          : ">= 3.2.0, < 4.0.0",
-      "abstract-curry": ">= 3.0.0, < 4.0.0",
+      "abstract-curry": ">= 4.0.0, < 5.0.0",
       "currypath"     : ">= 3.0.0, < 4.0.0",
       "filepath"      : ">= 3.0.0, < 4.0.0",
-      "flatcurry"     : ">= 3.0.0, < 4.0.0",
+      "flatcurry"     : ">= 3.0.0, < 5.0.0",
       "process"       : ">= 3.0.0, < 4.0.0",
       "profiling"     : ">= 3.0.0, < 4.0.0",
-      "rw-data"       : ">= 1.0.0"
+      "directory"     : ">= 3.0.0, < 4.0.0",
+      "rw-data"       : ">= 1.0.0, < 2.0.0"
     },
   "description": 
     "This package contains the implementation of a tool to generate instances of class `ReadWrite` for all types in a given module so that read and write operation for a compact data representation are available.",
