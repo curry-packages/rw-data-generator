@@ -2,7 +2,7 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `Various.Newtypes`.
 
-{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 module Various.NewtypesRW where
 
@@ -11,11 +11,11 @@ import RW.Base
 import System.IO
 
 instance ReadWrite MyTypeOk where
-  readRW strs r0 = (MyCons,r0)
+  readRW _ r0 = (MyCons,r0)
 
-  showRW params strs0 MyCons = (strs0,showString "")
+  showRW _ strs0 MyCons = (strs0,showString "")
 
-  writeRW params h MyCons strs = return strs
+  writeRW _ _ MyCons strs = return strs
 
   typeOf _ = monoRWType "MyTypeOk"
 

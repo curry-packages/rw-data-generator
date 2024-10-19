@@ -1,3 +1,6 @@
+--- This module tests the generated ReadWrite instances for the module Handle.MyData. 
+--- Specifically, it tests the correctness of writing operations using file handles.
+
 module Handle.Tests where
 
 import Handle.MyData
