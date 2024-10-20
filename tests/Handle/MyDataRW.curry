@@ -2,7 +2,7 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `Handle.MyData`.
 
-{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 module Handle.MyDataRW where
 
@@ -38,17 +38,17 @@ instance ReadWrite a => ReadWrite (MyData a) where
       get_a _ = failed
 
 instance ReadWrite MyElem where
-  readRW strs ('0' : r0) = (A,r0)
-  readRW strs ('1' : r0) = (B,r0)
-  readRW strs ('2' : r0) = (C,r0)
+  readRW _ ('0' : r0) = (A,r0)
+  readRW _ ('1' : r0) = (B,r0)
+  readRW _ ('2' : r0) = (C,r0)
 
-  showRW params strs0 A = (strs0,showChar '0')
-  showRW params strs0 B = (strs0,showChar '1')
-  showRW params strs0 C = (strs0,showChar '2')
+  showRW _ strs0 A = (strs0,showChar '0')
+  showRW _ strs0 B = (strs0,showChar '1')
+  showRW _ strs0 C = (strs0,showChar '2')
 
-  writeRW params h A strs = hPutChar h '0' >> return strs
-  writeRW params h B strs = hPutChar h '1' >> return strs
-  writeRW params h C strs = hPutChar h '2' >> return strs
+  writeRW _ h A strs = hPutChar h '0' >> return strs
+  writeRW _ h B strs = hPutChar h '1' >> return strs
+  writeRW _ h C strs = hPutChar h '2' >> return strs
 
   typeOf _ = monoRWType "MyElem"
 

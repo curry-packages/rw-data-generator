@@ -2,7 +2,7 @@
 -- It contains instances of class `ReadWrite` for all types
 -- defined in module `TypeIO.Defs`.
 
-{-# OPTIONS_FRONTEND -Wno-incomplete-patterns -Wno-unused-bindings #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 module TypeIO.DefsRW where
 
@@ -38,16 +38,16 @@ instance ReadWrite a => ReadWrite (MyMaybe a) where
   readRW strs ('0' : r0) = (MyJust a',r1)
     where
       (a',r1) = readRW strs r0
-  readRW strs ('1' : r0) = (MyNothing,r0)
+  readRW _ ('1' : r0) = (MyNothing,r0)
 
   showRW params strs0 (MyJust a') = (strs1,showChar '0' . show1)
     where
       (strs1,show1) = showRW params strs0 a'
-  showRW params strs0 MyNothing = (strs0,showChar '1')
+  showRW _ strs0 MyNothing = (strs0,showChar '1')
 
   writeRW params h (MyJust a') strs =
     hPutChar h '0' >> writeRW params h a' strs
-  writeRW params h MyNothing strs = hPutChar h '1' >> return strs
+  writeRW _ h MyNothing strs = hPutChar h '1' >> return strs
 
   typeOf n = RWType "MyMaybe" [typeOf (get_a n)]
     where
@@ -181,11 +181,11 @@ instance (ReadWrite a
          ,ReadWrite e
          ,ReadWrite f
          ,ReadWrite g) => ReadWrite (Lots a b c d e f g) where
-  readRW strs r0 = (Nah,r0)
+  readRW _ r0 = (Nah,r0)
 
-  showRW params strs0 Nah = (strs0,showString "")
+  showRW _ strs0 Nah = (strs0,showString "")
 
-  writeRW params h Nah strs = return strs
+  writeRW _ _ Nah strs = return strs
 
   typeOf n =
     RWType "Lots"
