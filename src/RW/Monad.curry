@@ -7,49 +7,59 @@ module RW.Monad where
 import Data.List
 
 import AbstractCurry.Types
-import Control.Monad 
+import Control.Monad
 import Control.Applicative
 
 import RW.Build
 
---- Runtime data for the code generation:
-data Runtime = Runtime 
-  { moduleName         :: String           -- Name of the module to be generated
-  , functionLayouts    :: [FunctionLayout] -- Function layouts 
-  , program            :: CurryProg        -- The Curry program to be processed
-  , errors             :: [String]         -- Errors that occured during the code generation
-  , illTypedDefintions :: [String]         -- Definitions that could not be typed      
+-- | Runtime data for the code generation:
+data Runtime = Runtime
+  { moduleName         :: String
+  -- ^ Name of the module to be generated
+  , functionLayouts    :: [FunctionLayout]
+  -- ^ Function layouts
+  , program            :: CurryProg
+  -- ^ The Curry program to be processed
+  , errors             :: [String]
+  -- ^ Errors that occured during the code generation
+  , illTypedDefintions :: [String]
+  -- ^ Definitions that could not be typed
   }
 
---- Command line options:
-data CLOptions = CLOptions 
-  { optStringLength   :: Int    -- Minimum length of extracted strings
-  , optAlphabetLength :: Int    -- Length of the string id alphabet
-  , optOutDir         :: String -- output directory
-  , optGenOpsFile     :: Bool   -- generate module with parameterized r/w ops?
+-- | Command line options:
+data CLOptions = CLOptions
+  { optStringLength   :: Int
+  -- ^ Minimum length of extracted strings
+  , optAlphabetLength :: Int
+  -- ^ Length of the string id alphabet
+  , optOutDir         :: String
+  -- ^ output directory
+  , optGenOpsFile     :: Bool
+  -- ^ generate module with parameterized r/w ops?
   , optHelp :: Bool
+  -- ^ show help?
   } deriving (Show)
 
 newtype RWM a = RWM { runRWM :: Runtime -> (a, Runtime) }
 
---- A function layout describes how a function is generated.
-data FunctionLayout = FunctionLayout 
+-- | A function layout describes how a function is generated.
+data FunctionLayout = FunctionLayout
   { funcName      :: String
   , funcType      :: CTypeExpr
   , funcGenerator :: FunctionGenerator
   }
 
---- A function generator is a function that takes a type declaration and returns the appropriate function rule(s). 
+-- | A function generator is a function that takes a type declaration and returns the appropriate function rule(s).
 type FunctionGenerator = CTypeDecl -> RWM [CRule]
 
--- Naming scheme for the generated code
-data Naming = Naming 
+-- | Naming scheme for the generated code
+data Naming = Naming
   { rwBaseModuleName         :: String
   , rwClassName              :: String
   , rwParametrizedModuleName :: String
   }
 
---- Default naming for the ReadWrite code generation
+-- | Default naming for the ReadWrite code generation
 rwNaming :: Naming
 rwNaming = Naming "RW.Base" "ReadWrite" "RWOps"
 
@@ -60,7 +70,7 @@ instance Applicative RWM where
   pure x = RWM $ \rt -> (x,rt)
   (RWM sf) <*> (RWM sa) =  RWM $ \rt -> let (fn, rt') = sf rt
                                             (a, rt'') = sa rt'
-                                        in (fn a, rt'') 
+                                        in (fn a, rt'')
 
 instance Monad RWM where
   return = pure
