@@ -5,7 +5,8 @@ Various implementation tests and performance benchmarks.
 The module `Benchmark` implements a benchmark tool. To use it, compile `Benchmark` and run `main`. 
 
 Note for KiCS2 users: Use 
-  :set rts -T
+  
+    :set rts -T
 
 # Example output
 
