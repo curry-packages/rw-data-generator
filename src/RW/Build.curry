@@ -11,7 +11,7 @@ module RW.Build where
 import AbstractCurry.Build
 import AbstractCurry.Types as ACT
 import AbstractCurry.Select
-import FlatCurry.Types as FCT
+import qualified FlatCurry.Types as FCT
 
 import Data.List
 import Data.Function

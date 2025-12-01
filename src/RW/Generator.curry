@@ -3,7 +3,7 @@
 --   generation.
 --
 --   Author : Lasse Züngel
---   Version: October 2025
+--   Version: November 2025
 ------------------------------------------------------------------------------
 {-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
@@ -11,12 +11,10 @@ module RW.Generator where
 
 import Data.List  ( nub, (\\), intercalate, intersperse, last )
 import Data.Maybe ( catMaybes )
+import Numeric    ( readNat )
 
 import Control.Applicative
 import Control.Monad
-
-import qualified FlatCurry.Files as FCF
-import qualified FlatCurry.Types as FCT
 
 import AbstractCurry.Files
 import AbstractCurry.Select
@@ -24,7 +22,7 @@ import AbstractCurry.Build
 import AbstractCurry.Pretty
 import AbstractCurry.Types
 
-import Numeric (readNat)
+import FlatCurry.Files       ( readFlatCurry )
 
 import System.Environment
 import System.FilePath       ( (</>) )
@@ -202,7 +200,7 @@ runTool args fls = do
           (\(dir,_) -> transform opts dir modname)
 
   transform opts basedir modname = do
-    prog <- flatProgToAbstract <$> FCF.readFlatCurry modname
+    prog <- flatProgToAbstract <$> readFlatCurry modname
     putStrLn $ "\nGenerating ReadWrite instances for '" ++ progName prog ++ "'"
     let resultRWM = runRWM gen (Runtime (progName prog ++ "RW") fls prog [] [])
     let generatedProg = fst resultRWM
