@@ -37,12 +37,15 @@ testGenFunctions =
   testEx "Various.Functions" "Various/FunctionsRW.curry" "FunctionsRW.curry"
     `returns` True
 
--- Generate RW instances for a given module, compares it to an existing one (second arg.),
--- and remove the generated file (third arg.) after the comparison.
+-- Generate RW instances for a given module, compares it to an existing one
+-- (second argument), and remove the generated file (third argument)
+-- if the comparison is successful.
 testEx :: String -> String -> String -> IO Bool
 testEx mname f1 f2 = do
   system $ "curry-rw-data -d . " ++ mname
   c1 <- readFile f1
   c2 <- readFile f2
-  let cmp = c1 == c2
-  cmp `seq` (system ("rm -f " ++ f2) >> return cmp)
+  let isequal = c1 == c2
+  if isequal then system ("rm -f " ++ f2) else return 0
+  return isequal
+

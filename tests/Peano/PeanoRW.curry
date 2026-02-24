@@ -14,12 +14,12 @@ instance ReadWrite Nat where
   readRW _ ('0' : r0) = (Zero,r0)
   readRW strs ('1' : r0) = (Successor a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW _ strs0 Zero = (strs0,showChar '0')
   showRW params strs0 (Successor a') = (strs1,showChar '1' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW _ h Zero strs = hPutChar h '0' >> return strs
   writeRW params h (Successor a') strs =

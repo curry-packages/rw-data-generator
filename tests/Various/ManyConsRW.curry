@@ -13,13 +13,13 @@ import System.IO
 instance (ReadWrite a,ReadWrite b) => ReadWrite (MyData a b) where
   readRW strs r0 = (MyData a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
 
   showRW params strs0 (MyData a' b') = (strs2,show1 . show2)
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
 
   writeRW params h (MyData a' b') strs =
     writeRW params h a' strs >>= writeRW params h b'

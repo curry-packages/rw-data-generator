@@ -13,20 +13,20 @@ import System.IO
 instance ReadWrite Prog where
   readRW strs r0 = (Prog a' b' c' d' e',r5)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
-      (e',r5) = readRW strs r4
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
+      (e', r5) = readRW strs r4
 
   showRW params strs0 (Prog a' b' c' d' e') =
     (strs5,show1 . (show2 . (show3 . (show4 . show5))))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
-      (strs5,show5) = showRW params strs4 e'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
+      (strs5, show5) = showRW params strs4 e'
 
   writeRW params h (Prog a' b' c' d' e') strs =
     (((writeRW params h a' strs >>= writeRW params h b')
@@ -51,44 +51,44 @@ instance ReadWrite Visibility where
 instance ReadWrite TypeDecl where
   readRW strs ('0' : r0) = (Type a' b' c' d',r4)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
   readRW strs ('1' : r0) = (TypeSyn a' b' c' d',r4)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
   readRW strs ('2' : r0) = (TypeNew a' b' c' d',r4)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
 
   showRW params strs0 (Type a' b' c' d') =
     (strs4,showChar '0' . (show1 . (show2 . (show3 . show4))))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
   showRW params strs0 (TypeSyn a' b' c' d') =
     (strs4,showChar '1' . (show1 . (show2 . (show3 . show4))))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
   showRW params strs0 (TypeNew a' b' c' d') =
     (strs4,showChar '2' . (show1 . (show2 . (show3 . show4))))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
 
   writeRW params h (Type a' b' c' d') strs =
     hPutChar h '0'
@@ -111,18 +111,18 @@ instance ReadWrite TypeDecl where
 instance ReadWrite ConsDecl where
   readRW strs r0 = (Cons a' b' c' d',r4)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
 
   showRW params strs0 (Cons a' b' c' d') =
     (strs4,show1 . (show2 . (show3 . show4)))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
 
   writeRW params h (Cons a' b' c' d') strs =
     ((writeRW params h a' strs >>= writeRW params h b')
@@ -134,15 +134,15 @@ instance ReadWrite ConsDecl where
 instance ReadWrite NewConsDecl where
   readRW strs r0 = (NewCons a' b' c',r3)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
 
   showRW params strs0 (NewCons a' b' c') = (strs3,show1 . (show2 . show3))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
 
   writeRW params h (NewCons a' b' c') strs =
     (writeRW params h a' strs >>= writeRW params h b') >>= writeRW params h c'
@@ -152,37 +152,37 @@ instance ReadWrite NewConsDecl where
 instance ReadWrite TypeExpr where
   readRW strs ('0' : r0) = (TVar a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('1' : r0) = (FuncType a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('2' : r0) = (TCons a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('3' : r0) = (ForallType a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
 
   showRW params strs0 (TVar a') = (strs1,showChar '0' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (FuncType a' b') =
     (strs2,showChar '1' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (TCons a' b') = (strs2,showChar '2' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (ForallType a' b') =
     (strs2,showChar '3' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
 
   writeRW params h (TVar a') strs = hPutChar h '0' >> writeRW params h a' strs
   writeRW params h (FuncType a' b') strs =
@@ -198,14 +198,14 @@ instance ReadWrite Kind where
   readRW _ ('0' : r0) = (KStar,r0)
   readRW strs ('1' : r0) = (KArrow a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
 
   showRW _ strs0 KStar = (strs0,showChar '0')
   showRW params strs0 (KArrow a' b') = (strs2,showChar '1' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
 
   writeRW _ h KStar strs = hPutChar h '0' >> return strs
   writeRW params h (KArrow a' b') strs =
@@ -216,15 +216,15 @@ instance ReadWrite Kind where
 instance ReadWrite OpDecl where
   readRW strs r0 = (Op a' b' c',r3)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
 
   showRW params strs0 (Op a' b' c') = (strs3,show1 . (show2 . show3))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
 
   writeRW params h (Op a' b' c') strs =
     (writeRW params h a' strs >>= writeRW params h b') >>= writeRW params h c'
@@ -249,20 +249,20 @@ instance ReadWrite Fixity where
 instance ReadWrite FuncDecl where
   readRW strs r0 = (Func a' b' c' d' e',r5)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
-      (e',r5) = readRW strs r4
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
+      (e', r5) = readRW strs r4
 
   showRW params strs0 (Func a' b' c' d' e') =
     (strs5,show1 . (show2 . (show3 . (show4 . show5))))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
-      (strs5,show5) = showRW params strs4 e'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
+      (strs5, show5) = showRW params strs4 e'
 
   writeRW params h (Func a' b' c' d' e') strs =
     (((writeRW params h a' strs >>= writeRW params h b')
@@ -275,19 +275,19 @@ instance ReadWrite FuncDecl where
 instance ReadWrite Rule where
   readRW strs ('0' : r0) = (Rule a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('1' : r0) = (External a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW params strs0 (Rule a' b') = (strs2,showChar '0' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (External a') = (strs1,showChar '1' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW params h (Rule a' b') strs =
     hPutChar h '0' >> (writeRW params h a' strs >>= writeRW params h b')
@@ -313,19 +313,19 @@ instance ReadWrite CombType where
   readRW _ ('1' : r0) = (ConsCall,r0)
   readRW strs ('2' : r0) = (FuncPartCall a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('3' : r0) = (ConsPartCall a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW _ strs0 FuncCall = (strs0,showChar '0')
   showRW _ strs0 ConsCall = (strs0,showChar '1')
   showRW params strs0 (FuncPartCall a') = (strs1,showChar '2' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (ConsPartCall a') = (strs1,showChar '3' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW _ h FuncCall strs = hPutChar h '0' >> return strs
   writeRW _ h ConsCall strs = hPutChar h '1' >> return strs
@@ -339,71 +339,71 @@ instance ReadWrite CombType where
 instance ReadWrite Expr where
   readRW strs ('0' : r0) = (Var a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('1' : r0) = (Lit a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('2' : r0) = (Comb a' b' c',r3)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
   readRW strs ('3' : r0) = (Let a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('4' : r0) = (Free a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('5' : r0) = (Or a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('6' : r0) = (Case a' b' c',r3)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
   readRW strs ('7' : r0) = (Typed a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
 
   showRW params strs0 (Var a') = (strs1,showChar '0' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (Lit a') = (strs1,showChar '1' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (Comb a' b' c') =
     (strs3,showChar '2' . (show1 . (show2 . show3)))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
   showRW params strs0 (Let a' b') = (strs2,showChar '3' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (Free a' b') = (strs2,showChar '4' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (Or a' b') = (strs2,showChar '5' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (Case a' b' c') =
     (strs3,showChar '6' . (show1 . (show2 . show3)))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
   showRW params strs0 (Typed a' b') = (strs2,showChar '7' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
 
   writeRW params h (Var a') strs = hPutChar h '0' >> writeRW params h a' strs
   writeRW params h (Lit a') strs = hPutChar h '1' >> writeRW params h a' strs
@@ -429,13 +429,13 @@ instance ReadWrite Expr where
 instance ReadWrite BranchExpr where
   readRW strs r0 = (Branch a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
 
   showRW params strs0 (Branch a' b') = (strs2,show1 . show2)
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
 
   writeRW params h (Branch a' b') strs =
     writeRW params h a' strs >>= writeRW params h b'
@@ -445,19 +445,19 @@ instance ReadWrite BranchExpr where
 instance ReadWrite Pattern where
   readRW strs ('0' : r0) = (Pattern a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
   readRW strs ('1' : r0) = (LPattern a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW params strs0 (Pattern a' b') = (strs2,showChar '0' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
   showRW params strs0 (LPattern a') = (strs1,showChar '1' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW params h (Pattern a' b') strs =
     hPutChar h '0' >> (writeRW params h a' strs >>= writeRW params h b')
@@ -469,23 +469,23 @@ instance ReadWrite Pattern where
 instance ReadWrite Literal where
   readRW strs ('0' : r0) = (Intc a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('1' : r0) = (Floatc a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('2' : r0) = (Charc a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW params strs0 (Intc a') = (strs1,showChar '0' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (Floatc a') = (strs1,showChar '1' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (Charc a') = (strs1,showChar '2' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW params h (Intc a') strs = hPutChar h '0' >> writeRW params h a' strs
   writeRW params h (Floatc a') strs =

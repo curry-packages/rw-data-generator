@@ -22,11 +22,11 @@ instance ReadWrite MyTypeOk where
 instance ReadWrite MyNewType where
   readRW strs r0 = (MyCons2 a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW params strs0 (MyCons2 a') = (strs1,show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW params h (MyCons2 a') strs = writeRW params h a' strs
 
@@ -35,11 +35,11 @@ instance ReadWrite MyNewType where
 instance ReadWrite MySecondNewType where
   readRW strs r0 = (MyCons3 a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
 
   showRW params strs0 (MyCons3 a') = (strs1,show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
 
   writeRW params h (MyCons3 a') strs = writeRW params h a' strs
 

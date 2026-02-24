@@ -13,19 +13,19 @@ import System.IO
 instance ReadWrite a => ReadWrite (MyData a) where
   readRW strs ('0' : r0) = (MyCons1 a',r1)
     where
-      (a',r1) = readRW strs r0
+      (a', r1) = readRW strs r0
   readRW strs ('1' : r0) = (MyCons2 a' b',r2)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
 
   showRW params strs0 (MyCons1 a') = (strs1,showChar '0' . show1)
     where
-      (strs1,show1) = showRW params strs0 a'
+      (strs1, show1) = showRW params strs0 a'
   showRW params strs0 (MyCons2 a' b') = (strs2,showChar '1' . (show1 . show2))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
 
   writeRW params h (MyCons1 a') strs =
     hPutChar h '0' >> writeRW params h a' strs
@@ -55,18 +55,18 @@ instance ReadWrite MyElem where
 instance ReadWrite MyBoring where
   readRW strs r0 = (MyOnlyConstructor a' b' c' d',r4)
     where
-      (a',r1) = readRW strs r0
-      (b',r2) = readRW strs r1
-      (c',r3) = readRW strs r2
-      (d',r4) = readRW strs r3
+      (a', r1) = readRW strs r0
+      (b', r2) = readRW strs r1
+      (c', r3) = readRW strs r2
+      (d', r4) = readRW strs r3
 
   showRW params strs0 (MyOnlyConstructor a' b' c' d') =
     (strs4,show1 . (show2 . (show3 . show4)))
     where
-      (strs1,show1) = showRW params strs0 a'
-      (strs2,show2) = showRW params strs1 b'
-      (strs3,show3) = showRW params strs2 c'
-      (strs4,show4) = showRW params strs3 d'
+      (strs1, show1) = showRW params strs0 a'
+      (strs2, show2) = showRW params strs1 b'
+      (strs3, show3) = showRW params strs2 c'
+      (strs4, show4) = showRW params strs3 d'
 
   writeRW params h (MyOnlyConstructor a' b' c' d') strs =
     ((writeRW params h a' strs >>= writeRW params h b')
